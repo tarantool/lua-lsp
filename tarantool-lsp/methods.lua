@@ -3,6 +3,7 @@ local analyze = require 'tarantool-lsp.analyze'
 local rpc     = require 'tarantool-lsp.rpc'
 local log     = require 'tarantool-lsp.log'
 local utf     = require 'tarantool-lsp.unicode'
+local docs 	  = require('tarantool-lsp.doc-manager')
 local json    = require 'json'
 local unpack  = table.unpack or unpack
 
@@ -22,6 +23,13 @@ function method_handlers.initialize(params, id)
 	log.info("Config.root = %q", Config.root)
 	analyze.load_completerc(Config.root)
 	analyze.load_luacheckrc(Config.root)
+
+	local ok, err = docs:init()
+	if err ~= nil then
+		log.info("Docs subsystem error: %s", err)
+	end
+	-- log.info("AAAA %t", docs.terms)
+
 	--ClientCapabilities = params.capabilities
 	Initialized = true
 	-- hopefully this is modest enough
@@ -606,9 +614,24 @@ method_handlers["textDocument/completion"] = function(params, id)
 	local left_part = current_line:sub(0, params.position.character)
 	local last_token = left_part:match("[%w.:_]*$")
 	if last_token then
-		local completions = console.completion_handler(last_token, 0, last_token:len()) or {}
-		-- Completion handler returns input string at the first element
-		for _, cmplt in fun.tail(completions) do
+		local raw_completions = {}
+		local ADD_COMPLETION = function(cmplt)
+			raw_completions[cmplt] = true
+		end
+
+		-- [?] Completion handler returns input string at the first element
+		local tnt_completions = console.completion_handler(last_token, 0, last_token:len()) or {}
+		local doc_completions = docs:getCompletions(last_token)
+		fun.each(ADD_COMPLETION, fun.tail(tnt_completions))
+		fun.each(ADD_COMPLETION, fun.remove_if(function(cmplt)
+			if raw_completions[cmplt .. '('] then
+				return false
+			end
+
+			return true
+		end, doc_completions))
+
+		for _, cmplt in fun.map(function(cmplt) return cmplt end, raw_completions) do
 			local showedCmplt = cmplt
 			local insertedCmplt = cmplt
 			local cmpltKind = completionKinds["Field"]
@@ -618,12 +641,14 @@ method_handlers["textDocument/completion"] = function(params, id)
 				showedCmplt = cmplt:gsub("%(", "")
 			end
 
+			local doc = docs:get(showedCmplt)
+
 			table.insert(items, {
 				label = showedCmplt,
-				kind = cmpltKind,
+				kind = doc and doc.type or cmpltKind,
 				insertText = insertedCmplt,
-				-- documentation = "box.cfg{} option",
-				detail = "detail information"
+				documentation = doc and doc.description,
+				detail = doc and doc.brief
 			})
 		end
 	end

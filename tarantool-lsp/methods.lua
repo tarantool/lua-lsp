@@ -7,6 +7,7 @@ local docs 	  = require('tarantool-lsp.tnt-doc.doc-manager')
 local json    = require 'json'
 local unpack  = table.unpack or unpack
 
+local fio = require('fio')
 local fun = require('fun')
 local console = require('console')
 local method_handlers = {}
@@ -24,7 +25,7 @@ function method_handlers.initialize(params, id)
 	analyze.load_completerc(Config.root)
 	analyze.load_luacheckrc(Config.root)
 
-	local ok, err = docs:init()
+	local ok, err = docs:init({ completions_dir = fio.pathjoin(_G._ROOT_PATH, 'completions') })
 	if err ~= nil then
 		log.info("Docs subsystem error: %s", err)
 	end
@@ -213,10 +214,10 @@ local function make_completion_items(k, val, isField, isInvoke, isVariant)
 				sig = table.concat(sig, ", ")
 			end
 
-			if isInvoke and not val_is_method then
-				-- don't list functions that aren't usable as methods
-				return {}
-			end
+			-- if isInvoke and not val_is_method then
+			-- 	-- don't list functions that aren't usable as methods
+			-- 	return {}
+			-- end
 
 			local ret = ""
 			if val.scope then
@@ -263,7 +264,7 @@ local function make_completion_items(k, val, isField, isInvoke, isVariant)
 				ret = string.format("-> %s", ret)
 			end
 
-			item.insertText = k
+			item.insertText = ("%s()"):format(k)
 			item.label = ("%s(%s) %s"):format(k, sig, ret)
 			item.documentation = val.description
 			if isInvoke then
@@ -273,6 +274,8 @@ local function make_completion_items(k, val, isField, isInvoke, isVariant)
 				item.kind   = completionKinds.Function
 				item.detail = "<function>"
 			end
+
+			item.detail = val.detail
 		elseif val.tag == "Table" then
 			item.detail = "<table>"
 			item.documentation = val.description
@@ -578,9 +581,7 @@ method_handlers["textDocument/completion"] = function(params, id)
 				local is_method = not not word:find(":")
 				log.debug("Is method? %_", is_method)
 				for iname, _, val in iter_scope(_scope) do
-					if type(iname) == "string" and
-						iname:sub(1, _iword:len()) == _iword then
-
+					if type(iname) == "string" and iname:sub(1, _iword:len()) == _iword then
 						local is_field = true
 						local subitems = make_completion_items(iname, val, is_method, is_field)
 						for _, item in ipairs(subitems) do

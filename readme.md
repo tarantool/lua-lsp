@@ -1,5 +1,5 @@
 # tarantool-lsp
-[![Build Status](https://travis-ci.org/artur-barsegyan/tarantool-lsp.svg)](https://travis-ci.org/artur-barsegyan/tarantool-lsp)
+[![Build Status](https://travis-ci.org/artur-barsegyan/tarantool-lsp.svg)](https://travis-ci.org/tarantool/lua-lsp)
 
 A [Language Server][lsp] for Tarantool/Lua code, written in Lua.
 
@@ -10,13 +10,13 @@ supports:
 
 ## [lua-lsp legacy][lua-lsp]
 
-[lua-lsp]: https://github.com/Alloyed/lua-lsp
+[lua-lsp]: https://github.com/tarantool/lua-lsp
 
 * Limited autocompletion
 * Goto definition
 * As you type linting and syntax checking
 * Code formatting
-* Supports Lua 5.1-5.3 and Luajit
+* Supports Lua 5.1
 
 ## Tarantool specific
 * Support autocompletion for Tarantool built-in libs on the fly
@@ -59,6 +59,22 @@ $ tarantool-lsp docs update
 ```
 
 After this, you should configure your text editor. Language clients can then communicate with this process using stdio as a transport. See [editors.md](editors.md) for more instructions specific to your editor of choice.
+
+### Library
+
+You can use tarantool-lsp as library for webserver with websocket.
+
+```
+tarantoolctl rocks install tarantool-lsp
+```
+
+In code usage:
+
+```
+
+create_websocket_handler()
+```
+
 
 ### Plugins
 

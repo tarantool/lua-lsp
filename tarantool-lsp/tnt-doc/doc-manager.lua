@@ -72,9 +72,9 @@ function DocumentationManager:init(opts)
     for _, libname in ipairs(cmpltFiles) do
          libname = fio.basename(libname)
          libname = libname:gsub("%.lua", "")
-
         self.libraries[libname] = true
     end
+
 
     return true
 end

@@ -1,7 +1,6 @@
 -- Analysis engine
 local parser       = require 'tarantool-lsp.lua-parser.parser'
 local log          = require 'tarantool-lsp.log'
-local tlog          = require 'log'
 local rpc          = require 'tarantool-lsp.rpc'
 local json         = require 'json'
 local ok, luacheck = pcall(require, 'luacheck')

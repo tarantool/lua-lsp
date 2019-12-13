@@ -501,7 +501,7 @@ function definition_of(config, doc, id_or_pos)
 		if (id.tag == "String" or id.tag == "Id") then
 			cursor = id.pos+1
 			word   = id[1]
-			assert(type(word) == "string", require'tarantool.inspect'(id, {depth = 3}))
+			assert(type(word) == "string", require'tarantool-lsp.inspect'(id, {depth = 3}))
 		elseif id.tag == "Index" then
 			cursor = id.pos+1
 			word = nodes_to_string(id)

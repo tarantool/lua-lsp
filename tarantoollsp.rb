@@ -11,6 +11,6 @@ class Tarantoollsp < Formula
 
 	def install
 		system "tarantoolctl", "rocks", "make"
-		prefix.install "tarantool-lsp", ".rocks", "bin", "3rd-party"
+		prefix.install "tarantool-lsp", ".rocks", "bin"
 	end
 end

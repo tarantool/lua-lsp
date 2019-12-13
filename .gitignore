@@ -19,8 +19,6 @@ work_log.md
 tarantool-lsp/completions/
 .tnt_doc
 
-# Any local test scripts
-*.sh
 
 # idea
 .idea

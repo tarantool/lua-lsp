@@ -62,13 +62,15 @@ local function main(_)
 				local ok
 				ok, err = xpcall(function()
 					local response = method_handlers[data.method](config, data.params, data.id)
-                    io.write(response)
-                    io.flush()
+                    if response then
+                        io.write("Content-Length: ".. string.len(response).."\r\n\r\n"..response)
+                        io.flush()
+                    end
 				end, debug.traceback)
 				if not ok then
 					if data.id then
 						local msgError = rpc.respondError(data.id, err, "InternalError")
-                        io.write(msgError)
+                        io.write("Content-Length: ".. string.len(msgError).."\r\n\r\n"..msgError)
                         io.flush()
 					else
 						log.warning("%s", tostring(err))

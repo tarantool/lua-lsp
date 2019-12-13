@@ -1,6 +1,7 @@
 -- Analysis engine
 local parser       = require 'tarantool-lsp.lua-parser.parser'
 local log          = require 'tarantool-lsp.log'
+local tlog          = require 'log'
 local rpc          = require 'tarantool-lsp.rpc'
 local json         = require 'json'
 local ok, luacheck = pcall(require, 'luacheck')
@@ -146,7 +147,7 @@ local function gen_scopes(config, len, ast, uri)
 		elseif value.tag == "Call" then
 			-- find require(), maybe
 			if value[1].tag == "Id" then
-				if value[1][1] == "require" and value[2].tag == "String" then
+				if value[1][1] == "require" and value[2] and value[2].tag == "String" then
 					return {
 						tag = "Require",
 						module = value[2][1]
@@ -492,7 +493,7 @@ local message_match =  "^([^:]+):(%d+):(%d+)%-(%d+): %(W(%d+)%) (.+)"
 local function try_luacheck(config, document)
 	local diagnostics = {}
 	local opts = {}
-	if luacheck then
+	if luacheck and config.root then
 		local reports
 		if config._useNativeLuacheck == false then
 			local tmp_path = "/tmp/check.lua"
@@ -626,8 +627,10 @@ function analyze.refresh(config, document)
 		-- AST are out of sync with the new text object.
 	end
 	local path = document.uri
-	local _, e = string.find(path, config.root, 1, true)
-	path = string.sub(path, (e or -1)+2, -1)
+    if config.root then
+        local _, e = string.find(path, config.root, 1, true)
+        path = string.sub(path, (e or -1)+2, -1)
+    end
 	log.verbose("%s: analyze took %f s", path, os.clock() - start_time)
 end
 

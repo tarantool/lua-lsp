@@ -5,32 +5,32 @@ A [Language Server][lsp] for Tarantool/Lua code, written in Lua.
 
 [lsp]: https://github.com/Microsoft/language-server-protocol
 
-It's still a work in progress, but it's usable for day-to-day. It currently
+It is still a work in progress, but quite usable. It currently
 supports:
 
 ## [lua-lsp legacy][lua-lsp]
 
 [lua-lsp]: https://github.com/tarantool/lua-lsp
 
-* Limited autocompletion
+* Limited auto-completion
 * Goto definition
 * As you type linting and syntax checking
 * Code formatting
-* Supports Lua 5.1
+* Lua 5.1
 
 ## Tarantool specific
-* Support autocompletion for Tarantool built-in libs on the fly
+* Autocompletion for Tarantool built-in libs on the fly:
 
   ![Completion](./images/completion.gif)
 
-* Support hovering for Tarantool built-in libs on the fly
+* Hovering for Tarantool built-in libs on the fly:
 
   ![Hover](./images/hover.gif)
 
-* Enhance completion support
+* Enhanced completion:
   - [NEW] Completions triggered only on `require`
 
-* Impl CLI doc manager
+* Implementation CLI doc manager:
 
   * parsing Tarantool documentation
   * version management
@@ -40,68 +40,69 @@ supports:
 
 ### Installation/Usage
 
-tarantool-lsp can be installed using `brew`:
+`tarantool-lsp` can be installed using `brew`:
 ```
 $ brew install https://github.com/tarantool/lua-lsp/raw/master/tarantoollsp.rb --HEAD
 ```
 This will install the `tarantool-lsp`.
 
-If you want to enable Tarantool documentation for the server, do the next command:
+To enable Tarantool documentation for the server, say:
 
 ```
 $ tarantool-lsp docs init
 ```
 
-To update the documentation you need to run the next command:
+To update the documentation, say:
 
 ```
 $ tarantool-lsp docs update
 ```
 
-After this, you should configure your text editor. Language clients can then communicate with this process using stdio as a transport. See [editors.md](editors.md) for more instructions specific to your editor of choice.
+After this, configure your text editor. Language clients can then communicate
+with this process using `stdio` as a transport. See [editors.md](editors.md)
+for more instructions specific to your editor of choice.
 
 ### Library
 
-You can use tarantool-lsp as library for webserver with websocket.
+You can use `tarantool-lsp` as a library for webserver with websocket.
 
 ```
 tarantoolctl rocks install tarantool-lsp
 ```
 
-In code usage:
+In-code usage:
 
 ```
-
 create_websocket_handler()
 ```
 
-
 ### Plugins
 
-tarantool-lsp automatically integrates with common lua packages, when they are
-installed. For linting, install luacheck:
+`tarantool-lsp` automatically integrates with common Lua packages when they are
+installed. For linting, install `luacheck`:
 ```
 $ luarocks install luacheck
 ```
 For code formatting, we currently support Formatter and LCF. Formatter is 5.1
-only, whereas lcf is 5.3 only.
+only, whereas LCF is 5.3 only.
+
 5.1:
 ```
 $ luarocks-5.1 install Formatter
 $ luarocks-5.3 install lcf
 ```
-If you have another package you'd like to see integrated, feel free to leave an
-issue/PR. Other plugins are always welcome, especially if they provide
-materially different results.
+If you have some other package and you would like to see it integrated,
+feel free to leave an issue/PR. Other plugins are always welcome, especially
+if they provide materially different results.
 
 ### Configuration
 
-tarantool-lsp reads a few project-level configuration files to do its work.
+`tarantool-lsp` reads a few project-level configuration files to do its work.
 
 To configure linting, we read your standard [.luacheckrc][check] file.
 
-For autocomplete support, we reimplement the [.luacompleterc][complete] format
-created by atom-autocomplete-lua. In particular, we need `luaVersion` to
+For auto-complete support, we reimplement the [.luacompleterc][complete] format
+created by `atom-autocomplete-lua`. In particular, we need `luaVersion` to
 properly understand your code.
 
 More LSP-specific configuration flags will hopefully be provided through your
@@ -112,8 +113,8 @@ editor's configuration support.
 
 ### TODO
 
-The LSP spec is big, and we don't implement all of it. here's a
-quick wishlist ordered by roughly by priority/feasibility.
+The LSP spec is big, and we don't implement all of it. Here is a
+quick wishlist, roughly ordered by priority/feasibility.
 
 * List references (`textDocument/references`)
 * Find symbols (`workspace/symbol`)

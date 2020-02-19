@@ -1,4 +1,4 @@
-local mock_loop = require 'spec.mock_loop'
+local mock_loop = require 'test.spec.mock_loop'
 local fmt = require 'tarantool-lsp.formatting'
 
 local match = string.match

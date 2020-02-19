@@ -1,4 +1,4 @@
-local mock_loop = require 'spec.mock_loop'
+local mock_loop = require 'test.spec.mock_loop'
 describe("lua-parser in mock loop", function()
 	it("handles the empty string", function()
 		mock_loop(function(rpc, s_rpc)

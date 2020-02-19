@@ -829,13 +829,13 @@ method_handlers["workspace/didChangeConfiguration"] = function(config, params)
 	log.info("Config loaded, new config: %t", config)
 end
 
-function method_handlers.shutdown(_, id)
-	Shutdown = true
+function method_handlers.shutdown(config, _, id)
+	config.Shutdown = true
 	return rpc.respond(id, json.null)
 end
 
-function method_handlers.exit(_)
-	if Shutdown then
+function method_handlers.exit(config, _)
+	if config.Shutdown then
 		os.exit(0)
 	else
 		os.exit(1)

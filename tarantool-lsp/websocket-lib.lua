@@ -8,9 +8,6 @@ local handshake = require('websocket.handshake')
 local fio = require('fio')
 local log = require('log')
 
---_G.Globals = _G.Globals or nil -- defined in analyze.lua
---_G.Types = _G.Types or {}
-
 local DETACHED = 101
 
 local initalized = false
@@ -21,7 +18,9 @@ local create_handler = function(options)
     log.info('Path: %s', path)
 
     if not initalized then
-        local ok, err = docs:init({ completions_dir = fio.pathjoin(path, 'completions') })
+        local ok, err = docs:init({
+            completions_dir = options and options.completion_root or fio.pathjoin(path, 'completions')
+        })
         if err ~= nil then
             log.info("Docs subsystem error: %s", err)
         end
@@ -54,6 +53,9 @@ local create_handler = function(options)
                 local data = json.decode(message.data)
                 if data.method then
                     -- request
+                    if data.method == 'exit' then
+                        return DETACHED
+                    end
                     if not method_handlers[data.method] then
                         -- log.verbose("confused by %t", data)
                         err = string.format("%q: Not found/NYI", tostring(data.method))
@@ -66,7 +68,9 @@ local create_handler = function(options)
                         local ok
                         ok, err = xpcall(function()
                             local response = method_handlers[data.method](config, data.params, data.id)
-                            ws_peer:write(response)
+                            if response then
+                                ws_peer:write(response)
+                            end
                         end, debug.traceback)
                         if not ok then
                             if data.id then

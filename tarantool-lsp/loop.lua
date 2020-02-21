@@ -13,6 +13,7 @@ local config = {
     globals = nil,
     debugMode = false,
     completion_root = fio.pathjoin(_G._ROOT_PATH, 'tarantool-lsp/completions'),
+    libraries = {},
     _useNativeLuacheck = false -- underscore means "experimental" here
 }
 

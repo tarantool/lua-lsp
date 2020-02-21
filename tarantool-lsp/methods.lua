@@ -32,10 +32,11 @@ function method_handlers.initialize(config, params, id)
     end
 
     if not config.web_server then
-        local ok, err = docs:init({ completions_dir = config.completion_root })
+        local libraries, err = docs:init({ completions_dir = config.completion_root })
         if err ~= nil then
             log.info("Docs subsystem error: %s", err)
         end
+        config.libraries = libraries
     end
 
     --ClientCapabilities = params.capabilities

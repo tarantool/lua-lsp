@@ -671,7 +671,7 @@ function analyze.module(config, mod)
 	-- FIXME: load path from config file
 	mod = mod:gsub("%.", "/")
 
-	local internalLibs = docs:getInternalLibrariesList()
+	local internalLibs = config.libraries
 	if internalLibs[mod] then
 		local ok, lib = pcall(require, 'tarantool-lsp.completions.' .. mod)
 		if ok then

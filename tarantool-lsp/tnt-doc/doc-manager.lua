@@ -55,10 +55,6 @@ function DocumentationManager.updateDoc(opts)
     return true
 end
 
-function DocumentationManager:getInternalLibrariesList(moduleName)
-    return self.libraries
-end
-
 function DocumentationManager:init(opts)
     checks('table', { completions_dir = 'string' })
 
@@ -66,17 +62,16 @@ function DocumentationManager:init(opts)
         return nil, "Completion directory isn't exist"
     end
 
-    self.libraries = {}
+    local libraries = {}
 
     local cmpltFiles = fio.glob(fio.pathjoin(opts.completions_dir, '*.lua'))
     for _, libname in ipairs(cmpltFiles) do
          libname = fio.basename(libname)
          libname = libname:gsub("%.lua", "")
-        self.libraries[libname] = true
+        libraries[libname] = true
     end
 
-
-    return true
+    return libraries
 end
 
 return DocumentationManager

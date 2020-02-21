@@ -10,21 +10,24 @@ local log = require('log')
 
 local DETACHED = 101
 
-local initalized = false
+-- [path] = libraries
+local completions_cache = {}
 
 local create_handler = function(options)
     local path = debug.getinfo(1).source:match("@?(.*/)")
 
     log.info('Path: %s', path)
 
-    if not initalized then
-        local ok, err = docs:init({
-            completions_dir = options and options.completion_root or fio.pathjoin(path, 'completions')
+    local completion_dir = options and options.completion_root or fio.pathjoin(path, 'completions')
+    if not completions_cache[completion_dir] then
+        local libraries, err = docs:init({
+            completions_dir =completion_dir
         })
         if err ~= nil then
             log.info("Docs subsystem error: %s", err)
+            error(err)
         end
-        initalized = true
+        completions_cache[completion_dir] = libraries
     end
     return function(req)
         local validated, errresp = handshake.validate_request(req)
@@ -43,6 +46,7 @@ local create_handler = function(options)
                 documents = {},
                 types = {},
                 web_server = true,
+                libraries = completions_cache[completion_dir],
                 _useNativeLuacheck = false -- underscore means "experimental" here
             }
             while true do

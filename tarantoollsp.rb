@@ -7,7 +7,6 @@ class Tarantoollsp < Formula
 
 	# By default, Tarantool from brew includes devel headers
 	depends_on "tarantool"
-	depends_on "gcc"
 
 	def install
 		system "tarantoolctl", "rocks", "make"

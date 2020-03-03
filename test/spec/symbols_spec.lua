@@ -1,4 +1,4 @@
-local mock_loop = require 'spec.mock_loop'
+local mock_loop = require 'test.spec.mock_loop'
 
 describe("textDocument/documentSymbol", function()
 	it("lists local variables", function()
